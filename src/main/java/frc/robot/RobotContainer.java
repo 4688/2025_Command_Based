@@ -97,6 +97,7 @@ public class RobotContainer
     Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngle);
     Command zeroNavx = Commands.run(() -> drivebase.zeroGyro());
+    Command turn180 = Commands.run(()-> drivebase.drive(new Translation2d(0,0),180,false));
     final Command fullspeed = Commands.run(() -> drivebase.getSwerveDrive().setMaximumAllowableSpeeds(Constants.MAX_SPEED,1));
     final Command halfspeed = Commands.run(() -> drivebase.getSwerveDrive().setMaximumAllowableSpeeds(Constants.MAX_SPEED/4,1));
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
@@ -110,6 +111,7 @@ public class RobotContainer
     //algae intake/outtake
     driverXbox.x().whileTrue(arm.intake()).whileFalse(arm.algae());
     driverXbox.b().whileTrue(arm.outtake()).whileFalse(arm.algae());
+    driverXbox.povDown().whileTrue(turn180);
     //driverXbox.y().whileTrue(arm.coarlin());
     //driverXbox.a().whileTrue(arm.coarlout());
   }
