@@ -101,14 +101,12 @@ public class Arm extends SubsystemBase {
   }
 
   //goto elevator level - get encoder values
-  public void gotoLevel(double level, double level2,  Boolean up){
+  public void gotoLevel(double level, double level2){
     if (elevator1.getEncoder().getPosition() < level && elevator2.getEncoder().getPosition() > level2){
-      //up
-      if (up){
         elevator1.set(espeed);
         elevator2.set(-espeed);
-      }
-    }}
+    }
+  }
 
   /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
