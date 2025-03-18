@@ -5,6 +5,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,11 +16,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -37,6 +42,9 @@ public class RobotContainer
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
 
+  //Arm calls
+  private final Arm arm = new Arm();
+  
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
@@ -71,6 +79,7 @@ public class RobotContainer
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
     NamedCommands.registerCommand("test", Commands.print("I EXIST"));
+
   }
 
   /**
@@ -88,8 +97,21 @@ public class RobotContainer
     Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngle);
     Command zeroNavx = Commands.run(() -> drivebase.zeroGyro());
+    final Command fullspeed = Commands.run(() -> drivebase.getSwerveDrive().setMaximumAllowableSpeeds(Constants.MAX_SPEED,1));
+    final Command halfspeed = Commands.run(() -> drivebase.getSwerveDrive().setMaximumAllowableSpeeds(Constants.MAX_SPEED/4,1));
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    
     driverXbox.button(7).whileTrue(zeroNavx);
+    //hold to slow down
+    driverXbox.rightTrigger().whileTrue(halfspeed).whileFalse(fullspeed);
+    //elevator going up/down
+    driverXbox.rightBumper().whileTrue(arm.goUp()).whileFalse(arm.hold());
+    driverXbox.leftBumper().whileTrue(arm.goDown()).whileFalse(arm.hold());
+    //algae intake/outtake
+    driverXbox.x().whileTrue(arm.intake()).whileFalse(arm.algae());
+    driverXbox.b().whileTrue(arm.outtake()).whileFalse(arm.algae());
+    //driverXbox.y().whileTrue(arm.coarlin());
+    //driverXbox.a().whileTrue(arm.coarlout());
   }
 
   /**
