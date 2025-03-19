@@ -77,6 +77,7 @@ public class RobotContainer
    */
   public RobotContainer()
   {
+
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -111,6 +112,7 @@ public class RobotContainer
     //chaning the max speeds for the brakes
     final Command fullspeed = Commands.run(() -> drivebase.getSwerveDrive().setMaximumAllowableSpeeds(Constants.MAX_SPEED,1));
     final Command halfspeed = Commands.run(() -> drivebase.getSwerveDrive().setMaximumAllowableSpeeds(Constants.MAX_SPEED/4,1));
+    
     //lets the thing drive
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     
@@ -123,9 +125,9 @@ public class RobotContainer
     //algae intake/outtake
     driverXbox.x().whileTrue(arm.AlgaeIntake()).whileFalse(arm.AlgaeHeld());
     driverXbox.b().whileTrue(arm.AlgaeOuttake()).whileFalse(arm.AlgaeHeld());
-    driverXbox.povDown().whileTrue(turn180);
-    //driverXbox.y().whileTrue(arm.coarlin());
-    //driverXbox.a().whileTrue(arm.coarlout());
+    driverXbox.povDown().whileTrue(drivebase.centerModulesCommand());
+    driverXbox.povLeft().whileTrue(arm.coralleft()).whileFalse(arm.coralstop());
+    driverXbox.povRight().whileTrue(arm.coralright()).whileFalse(arm.coralstop());
   }
 
   /**

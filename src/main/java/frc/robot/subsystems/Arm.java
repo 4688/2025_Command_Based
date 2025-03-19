@@ -43,9 +43,9 @@ public class Arm extends SubsystemBase {
     encoder1 = elevator1.getEncoder().getPosition();
     encoder2 = elevator2.getEncoder().getPosition();
     espeed = 0.25;
-    intake1 = new SparkMax(20, MotorType.kBrushless);
+    intake1 = new SparkMax(21, MotorType.kBrushless);
     intake2 = new SparkMax(22, MotorType.kBrushless);
-    coral = new SparkMax(21, MotorType.kBrushless);
+    coral = new SparkMax(20, MotorType.kBrushless);
 
   }
   private static double algaeIntakeSpeed = 0.5;
@@ -59,6 +59,13 @@ public class Arm extends SubsystemBase {
    */
   
 
+
+  public Command coralright(){
+    return runOnce(()->{coral.set(0.5);});
+  }
+  public Command coralleft(){
+    return runOnce(()->{coral.set(-0.5);});}
+  public Command coralstop(){return runOnce(()->{coral.set(0);});}
   //make the elevator go up
   public Command goUp() {
     // Inline construction of command goes here.
@@ -175,9 +182,7 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("encoder1", encoder1);
-    SmartDashboard.putNumber("encoder2", encoder2);
-  }
+}
 
   @Override
   public void simulationPeriodic() {

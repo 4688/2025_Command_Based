@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Example Path"
+            "pathName": "Go to Reef (at start)"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "gotolevel1"
+            "pathName": "Go to Source"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Go to Reef (from source"
           }
         }
       ]
