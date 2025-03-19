@@ -22,13 +22,21 @@ public class Arm extends SubsystemBase {
   SparkMax intake1;
   SparkMax intake2;
   SparkMax coral;
-  /*double l1
-  double l12
-  double l2
-  double l22
-  double l3
-  double l32
-  /** Creates a new ExampleSubsystem. */
+
+  double l1;
+  double l12;
+  double l2;
+  double l22;
+  double l3;
+  double l32;
+  double l4;
+  double l42;
+  double a1;
+  double a12;
+  double a2;
+  double a22;
+
+  /* Creates a new ExampleSubsystem. */
   public Arm() {
     elevator1 = new SparkMax(26, MotorType.kBrushless);
     elevator2 = new SparkMax(25, MotorType.kBrushless);
@@ -40,7 +48,10 @@ public class Arm extends SubsystemBase {
     coral = new SparkMax(21, MotorType.kBrushless);
 
   }
-
+  private static double algaeIntakeSpeed = 0.5;
+  private static double algaeOutakeSpeed = 0.5;
+  private static double algaeHoldspeed = 0.1;
+  private static double elevatorHoldSpeed = 0.05;
   /**
    * Example command factory method.
    *
@@ -69,43 +80,86 @@ public class Arm extends SubsystemBase {
   }
 
   //make the elevator stay in place
-  public Command hold(){
+  public Command ElevatorHold(){
     return runOnce(() -> {
-      elevator1.set(0.05);
-      elevator2.set(-0.05);
+      elevator1.set(elevatorHoldSpeed);
+      elevator2.set(-elevatorHoldSpeed);
     });
   }
 
   //algae intake
-  public Command intake(){
+  public Command AlgaeIntake(){
     return runOnce(() -> {
-      intake1.set(-0.5);
-      intake2.set(0.5);
+      intake1.set(-algaeIntakeSpeed);
+      intake2.set(algaeIntakeSpeed);
     });
   }
 
   //algae outtake
-  public Command outtake(){
+  public Command AlgaeOuttake(){
     return runOnce(() -> {
-      intake1.set(0.5);
-      intake2.set(-0.5);
+      intake1.set(algaeOutakeSpeed);
+      intake2.set(-algaeOutakeSpeed);
     });
   }
 
   //algea hold
-  public Command algae(){
+  public Command AlgaeHeld(){ // should be renamed algaeHold for readablility
     return runOnce(() -> {
-      intake1.set(-0.1);
-      intake2.set(0.1);
+      intake1.set(-algaeHoldspeed);
+      intake2.set(algaeHoldspeed);
     });
+  }
+
+  public Command gotolevel1(){
+    return runOnce(()-> {gotoLevel(l1, l12);});
+  }
+  public Command gotolevel2(){
+    return runOnce(()-> {gotoLevel(l2, l22);});
+  }
+  public Command gotolevel3(){
+    return runOnce(()-> {gotoLevel(l3, l32);});
+  }
+  public Command gotolevel4(){
+    return runOnce(()-> {gotoLevel(l4, l42);});
+  }
+  public Command gotoAlgaelevel1(){
+    return runOnce(()-> {gotoLevel(a1, a12);});
+  }
+  public Command gotoAlgaelevel2(){
+    return runOnce(()-> {gotoLevel(a2, a22);});
   }
 
   //goto elevator level - get encoder values
   public void gotoLevel(double level, double level2){
-    if (elevator1.getEncoder().getPosition() < level && elevator2.getEncoder().getPosition() > level2){
+    if (elevator1.getEncoder().getPosition() <= level && elevator2.getEncoder().getPosition() >= level2){
         elevator1.set(espeed);
         elevator2.set(-espeed);
     }
+  }
+
+  public boolean autotrue(){
+    return true;
+  }
+
+
+  public Command Autogotolevel1(){
+    return runOnce(()-> {if (autotrue()== true){gotoLevel(l1, l12);}});
+  }
+  public Command Autogotolevel2(){
+    return runOnce(()-> {if (autotrue()== true){gotoLevel(l2, l22);}});
+  }
+  public Command Autogotolevel3(){
+    return runOnce(()-> {if (autotrue()== true){gotoLevel(l3, l32);}});
+  }
+  public Command Autogotolevel4(){
+    return runOnce(()-> {if (autotrue()== true){gotoLevel(l4, l42);}});
+  }
+  public Command AutogotoAlgaelevel1(){
+    return runOnce(()-> {if (autotrue()== true){gotoLevel(a1, a12);}});
+  }
+  public Command AutogotoAlgaelevel2(){
+    return runOnce(()-> {if (autotrue()== true){gotoLevel(a2, a22);}});
   }
 
   /**

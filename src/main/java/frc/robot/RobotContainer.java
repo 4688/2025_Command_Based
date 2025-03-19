@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,6 +39,7 @@ public class RobotContainer
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
+  final         Joystick buttons = new Joystick(1);
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve"));
@@ -79,7 +81,12 @@ public class RobotContainer
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
     NamedCommands.registerCommand("test", Commands.print("I EXIST"));
-
+    NamedCommands.registerCommand("gotolevel1",arm.Autogotolevel1());
+    NamedCommands.registerCommand("gotolevel2",arm.Autogotolevel2());
+    NamedCommands.registerCommand("gotolevel3",arm.Autogotolevel3());
+    NamedCommands.registerCommand("gotolevel4",arm.Autogotolevel4());
+    NamedCommands.registerCommand("gotoAlgaelevel1",arm.AutogotoAlgaelevel1());
+    NamedCommands.registerCommand("gotoAlgaelevel2",arm.AutogotoAlgaelevel2());
   }
 
   /**
@@ -96,21 +103,26 @@ public class RobotContainer
     Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
     Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngle);
+    
+    //zeroing the navx
     Command zeroNavx = Commands.run(() -> drivebase.zeroGyro());
+    //calling the drive function in drivebase, needs translation2d and needs a double rotation
     Command turn180 = Commands.run(()-> drivebase.drive(new Translation2d(0,0),180,false));
+    //chaning the max speeds for the brakes
     final Command fullspeed = Commands.run(() -> drivebase.getSwerveDrive().setMaximumAllowableSpeeds(Constants.MAX_SPEED,1));
     final Command halfspeed = Commands.run(() -> drivebase.getSwerveDrive().setMaximumAllowableSpeeds(Constants.MAX_SPEED/4,1));
+    //lets the thing drive
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     
     driverXbox.button(7).whileTrue(zeroNavx);
     //hold to slow down
     driverXbox.rightTrigger().whileTrue(halfspeed).whileFalse(fullspeed);
     //elevator going up/down
-    driverXbox.rightBumper().whileTrue(arm.goUp()).whileFalse(arm.hold());
-    driverXbox.leftBumper().whileTrue(arm.goDown()).whileFalse(arm.hold());
+    driverXbox.rightBumper().whileTrue(arm.goUp()).whileFalse(arm.ElevatorHold());
+    driverXbox.leftBumper().whileTrue(arm.goDown()).whileFalse(arm.ElevatorHold());
     //algae intake/outtake
-    driverXbox.x().whileTrue(arm.intake()).whileFalse(arm.algae());
-    driverXbox.b().whileTrue(arm.outtake()).whileFalse(arm.algae());
+    driverXbox.x().whileTrue(arm.AlgaeIntake()).whileFalse(arm.AlgaeHeld());
+    driverXbox.b().whileTrue(arm.AlgaeOuttake()).whileFalse(arm.AlgaeHeld());
     driverXbox.povDown().whileTrue(turn180);
     //driverXbox.y().whileTrue(arm.coarlin());
     //driverXbox.a().whileTrue(arm.coarlout());
