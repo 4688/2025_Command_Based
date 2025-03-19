@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 
-public class Arm extends SubsystemBase {
+public class ArmUntested extends SubsystemBase {
   SparkMax elevator1;
   SparkMax elevator2;
   public double encoder1;
